@@ -1,0 +1,11 @@
+# Репозиторий публичный. Разрешено только перечисленное ниже — всё остальное игнорируется.
+/*
+!/.gitignore
+!/README.md
+!/CLOUD-TASKS.md
+!/tools/
+!/.githooks/
+!/encrypted/
+!/public/
+/encrypted/*
+!/encrypted/*.enc

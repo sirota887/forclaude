@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Репозиторий публичный: в коммит пускаем только зашифрованные архивы, инструменты и заведомо публичные файлы.
+set -euo pipefail
+allowed='^(encrypted/[^/]+\.enc|tools/[^/]+|\.githooks/[^/]+|public/.+|README\.md|CLOUD-TASKS\.md|\.gitignore)$'
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+bad=$(printf '%s\n' "$staged" | grep -vE "$allowed" | grep -v '^$' || true)
+if [ -n "$bad" ]; then
+  echo "Коммит отклонён: открытые файлы вне разрешённых папок:" >&2
+  printf '%s\n' "$bad" >&2
+  exit 1
+fi
+for f in $(printf '%s\n' "$staged" | grep -E '^encrypted/' || true); do
+  if [ "$(head -c 8 "$f")" != "Salted__" ]; then
+    echo "Коммит отклонён: $f не похож на зашифрованный архив" >&2
+    exit 1
+  fi
+done
